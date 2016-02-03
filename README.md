@@ -15,7 +15,7 @@ Multi-source environment variable loader with precedence and validation
 Add to your Gemfile:
 
 ```ruby
-gem 'philiprehberger-env_loader'
+gem "philiprehberger-env_loader"
 ```
 
 Or install directly:
@@ -71,8 +71,8 @@ Philiprehberger::EnvLoader.generate_template(
 
 ```bash
 bundle install
-bundle exec rspec      # Run tests
-bundle exec rubocop    # Check code style
+bundle exec rspec
+bundle exec rubocop
 ```
 
 ## License
