@@ -27,7 +27,7 @@ gem install philiprehberger-env_loader
 ## Usage
 
 ```ruby
-require 'philiprehberger/env_loader'
+require "philiprehberger/env_loader"
 
 Philiprehberger::EnvLoader.load('.env', '.env.local',
   required: %w[DATABASE_URL SECRET_KEY],
