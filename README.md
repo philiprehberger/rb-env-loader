@@ -66,6 +66,8 @@ Philiprehberger::EnvLoader.generate_template(
 | `.load(*files, required:, types:, defaults:)` | Load variables from .env files with options |
 | `.validate!(*keys)` | Raise if any keys are missing or empty in ENV |
 | `.generate_template(output:, keys:)` | Generate a .env.template file |
+| `EnvLoader::Error` | Base error class for all gem errors |
+| `EnvLoader::ValidationError` | Raised when required keys are missing or empty |
 
 ## Development
 
