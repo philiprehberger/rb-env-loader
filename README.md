@@ -3,6 +3,7 @@
 [![Tests](https://github.com/philiprehberger/rb-env-loader/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-env-loader/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-env_loader.svg)](https://rubygems.org/gems/philiprehberger-env_loader)
 [![License](https://img.shields.io/github/license/philiprehberger/rb-env-loader)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Multi-source environment variable loader with precedence and validation
 
