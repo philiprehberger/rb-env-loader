@@ -24,28 +24,28 @@ RSpec.describe Philiprehberger::EnvLoader do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_KEY=hello\n")
       described_class.load(env_file)
-      expect(ENV['TEST_KEY']).to eq('hello')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('hello')
     end
 
     it 'handles quoted values' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_KEY=\"quoted value\"\n")
       described_class.load(env_file)
-      expect(ENV['TEST_KEY']).to eq('quoted value')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('quoted value')
     end
 
     it 'handles single-quoted values' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_KEY='single quoted'\n")
       described_class.load(env_file)
-      expect(ENV['TEST_KEY']).to eq('single quoted')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('single quoted')
     end
 
     it 'skips comments and blank lines' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "# comment\n\nTEST_KEY=value\n")
       described_class.load(env_file)
-      expect(ENV['TEST_KEY']).to eq('value')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('value')
     end
 
     it 'later files take precedence' do
@@ -54,7 +54,7 @@ RSpec.describe Philiprehberger::EnvLoader do
       File.write(file1, "TEST_KEY=first\n")
       File.write(file2, "TEST_KEY=second\n")
       described_class.load(file1, file2)
-      expect(ENV['TEST_KEY']).to eq('second')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('second')
     end
 
     it 'does not override existing ENV values' do
@@ -62,22 +62,22 @@ RSpec.describe Philiprehberger::EnvLoader do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_KEY=from_file\n")
       described_class.load(env_file)
-      expect(ENV['TEST_KEY']).to eq('existing')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('existing')
     end
 
     it 'applies default values' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_HOST=localhost\n")
       described_class.load(env_file, defaults: { 'TEST_PORT' => '3000' })
-      expect(ENV['TEST_PORT']).to eq('3000')
+      expect(ENV.fetch('TEST_PORT', nil)).to eq('3000')
     end
 
     it 'raises on missing required keys' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_KEY=value\n")
-      expect {
+      expect do
         described_class.load(env_file, required: ['REQUIRED_KEY'])
-      }.to raise_error(Philiprehberger::EnvLoader::ValidationError, /REQUIRED_KEY/)
+      end.to raise_error(Philiprehberger::EnvLoader::ValidationError, /REQUIRED_KEY/)
     end
 
     it 'skips non-existent files' do
@@ -89,8 +89,8 @@ RSpec.describe Philiprehberger::EnvLoader do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_PORT=8080\nTEST_DEBUG=true\n")
       described_class.load(env_file, types: { 'TEST_PORT' => :integer, 'TEST_DEBUG' => :boolean })
-      expect(ENV['TEST_PORT']).to eq('8080')
-      expect(ENV['TEST_DEBUG']).to eq('true')
+      expect(ENV.fetch('TEST_PORT', nil)).to eq('8080')
+      expect(ENV.fetch('TEST_DEBUG', nil)).to eq('true')
     end
 
     # --- Expanded tests ---
@@ -106,7 +106,7 @@ RSpec.describe Philiprehberger::EnvLoader do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_KEY=base64==encoded\n")
       described_class.load(env_file)
-      expect(ENV['TEST_KEY']).to eq('base64==encoded')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('base64==encoded')
     end
 
     it 'handles empty value after equals' do
@@ -120,21 +120,21 @@ RSpec.describe Philiprehberger::EnvLoader do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "INVALID_LINE\nTEST_KEY=valid\n")
       described_class.load(env_file)
-      expect(ENV['TEST_KEY']).to eq('valid')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('valid')
     end
 
     it 'strips whitespace around keys and values' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "  TEST_KEY  =  hello  \n")
       described_class.load(env_file)
-      expect(ENV['TEST_KEY']).to eq('hello')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('hello')
     end
 
     it 'handles inline comments are not stripped (treated as value)' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_KEY=value # not a comment\n")
       described_class.load(env_file)
-      expect(ENV['TEST_KEY']).to eq('value # not a comment')
+      expect(ENV.fetch('TEST_KEY', nil)).to eq('value # not a comment')
     end
 
     it 'file overrides defaults' do
@@ -149,37 +149,37 @@ RSpec.describe Philiprehberger::EnvLoader do
       File.write(env_file, "TEST_KEY=present\n")
       result = described_class.load(env_file, defaults: { 'DEFAULT_ONLY' => 'fallback' })
       expect(result['DEFAULT_ONLY']).to eq('fallback')
-      expect(ENV['DEFAULT_ONLY']).to eq('fallback')
+      expect(ENV.fetch('DEFAULT_ONLY', nil)).to eq('fallback')
     end
 
     it 'coerces float type' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_FLOAT=3.14\n")
       described_class.load(env_file, types: { 'TEST_FLOAT' => :float })
-      expect(ENV['TEST_FLOAT']).to eq('3.14')
+      expect(ENV.fetch('TEST_FLOAT', nil)).to eq('3.14')
     end
 
     it 'coerces boolean yes/on/1 values to true' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_BOOL_YES=yes\nTEST_BOOL_ON=on\n")
       described_class.load(env_file, types: { 'TEST_BOOL_YES' => :boolean, 'TEST_BOOL_ON' => :boolean })
-      expect(ENV['TEST_BOOL_YES']).to eq('true')
-      expect(ENV['TEST_BOOL_ON']).to eq('true')
+      expect(ENV.fetch('TEST_BOOL_YES', nil)).to eq('true')
+      expect(ENV.fetch('TEST_BOOL_ON', nil)).to eq('true')
     end
 
     it 'coerces boolean no/off/0 values to false' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_BOOL_NO=no\n")
       described_class.load(env_file, types: { 'TEST_BOOL_NO' => :boolean })
-      expect(ENV['TEST_BOOL_NO']).to eq('false')
+      expect(ENV.fetch('TEST_BOOL_NO', nil)).to eq('false')
     end
 
     it 'raises with multiple missing required keys' do
       env_file = File.join(tmpdir, '.env')
       File.write(env_file, "TEST_KEY=value\n")
-      expect {
+      expect do
         described_class.load(env_file, required: %w[FIRST_KEY SECOND_KEY])
-      }.to raise_error(Philiprehberger::EnvLoader::ValidationError, /FIRST_KEY.*SECOND_KEY|SECOND_KEY.*FIRST_KEY/)
+      end.to raise_error(Philiprehberger::EnvLoader::ValidationError, /FIRST_KEY.*SECOND_KEY|SECOND_KEY.*FIRST_KEY/)
     end
 
     it 'loads from multiple files merging all keys' do
@@ -199,16 +199,16 @@ RSpec.describe Philiprehberger::EnvLoader do
     end
 
     it 'raises when keys are missing' do
-      expect {
+      expect do
         described_class.validate!('REQUIRED_KEY')
-      }.to raise_error(Philiprehberger::EnvLoader::ValidationError, /REQUIRED_KEY/)
+      end.to raise_error(Philiprehberger::EnvLoader::ValidationError, /REQUIRED_KEY/)
     end
 
     it 'raises when keys are empty' do
       ENV['TEST_KEY'] = ''
-      expect {
+      expect do
         described_class.validate!('TEST_KEY')
-      }.to raise_error(Philiprehberger::EnvLoader::ValidationError)
+      end.to raise_error(Philiprehberger::EnvLoader::ValidationError)
     end
 
     it 'validates multiple keys at once' do
@@ -218,9 +218,9 @@ RSpec.describe Philiprehberger::EnvLoader do
     end
 
     it 'reports all missing keys in error message' do
-      expect {
+      expect do
         described_class.validate!('FIRST_KEY', 'SECOND_KEY')
-      }.to raise_error(Philiprehberger::EnvLoader::ValidationError, /FIRST_KEY/)
+      end.to raise_error(Philiprehberger::EnvLoader::ValidationError, /FIRST_KEY/)
     end
   end
 
