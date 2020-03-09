@@ -2,8 +2,7 @@
 
 [![Tests](https://github.com/philiprehberger/rb-env-loader/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-env-loader/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-env_loader.svg)](https://rubygems.org/gems/philiprehberger-env_loader)
-[![License](https://img.shields.io/github/license/philiprehberger/rb-env-loader)](LICENSE)
-[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
+[![Last updated](https://img.shields.io/github/last-commit/philiprehberger/rb-env-loader)](https://github.com/philiprehberger/rb-env-loader/commits/main)
 
 Multi-source environment variable loader with precedence and validation
 
@@ -78,6 +77,24 @@ bundle exec rspec
 bundle exec rubocop
 ```
 
+## Support
+
+If you find this project useful:
+
+⭐ [Star the repo](https://github.com/philiprehberger/rb-env-loader)
+
+🐛 [Report issues](https://github.com/philiprehberger/rb-env-loader/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+
+💡 [Suggest features](https://github.com/philiprehberger/rb-env-loader/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
+
+❤️ [Sponsor development](https://github.com/sponsors/philiprehberger)
+
+🌐 [All Open Source Projects](https://philiprehberger.com/open-source-packages)
+
+💻 [GitHub Profile](https://github.com/philiprehberger)
+
+🔗 [LinkedIn Profile](https://www.linkedin.com/in/philiprehberger)
+
 ## License
 
-MIT
+[MIT](LICENSE)
