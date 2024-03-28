@@ -10,8 +10,8 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'Multi-source environment variable loader with precedence and validation'
   spec.description = 'Load environment variables from multiple .env files with configurable ' \
-                       'precedence, type coercion, required key validation, default values, ' \
-                       'and template generation for documentation.'
+                     'precedence, type coercion, required key validation, default values, ' \
+                     'and template generation for documentation.'
   spec.homepage = 'https://philiprehberger.com/open-source-packages/ruby/philiprehberger-env_loader'
   spec.license = 'MIT'
 
