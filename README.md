@@ -50,6 +50,20 @@ Philiprehberger::EnvLoader.validate!('DATABASE_URL', 'REDIS_URL')
 # raises EnvLoader::ValidationError if any key is missing or empty
 ```
 
+### Prefix Filtering
+
+```ruby
+require "philiprehberger/env_loader"
+
+# Only load APP_* variables
+vars = Philiprehberger::EnvLoader.load(".env", prefix: "APP_")
+vars["APP_HOST"]  # => "localhost"
+
+# Strip the prefix from keys
+vars = Philiprehberger::EnvLoader.load(".env", prefix: "APP_", strip_prefix: true)
+vars["HOST"]  # => "localhost"
+```
+
 ### Template Generation
 
 ```ruby
@@ -63,7 +77,7 @@ Philiprehberger::EnvLoader.generate_template(
 
 | Method | Description |
 |--------|-------------|
-| `.load(*files, required:, types:, defaults:)` | Load variables from .env files with options |
+| `.load(*files, required:, types:, defaults:, prefix:, strip_prefix:)` | Load variables from .env files with options |
 | `.validate!(*keys)` | Raise if any keys are missing or empty in ENV |
 | `.generate_template(output:, keys:)` | Generate a .env.template file |
 | `EnvLoader::Error` | Base error class for all gem errors |

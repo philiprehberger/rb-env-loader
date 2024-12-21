@@ -18,7 +18,7 @@ module Philiprehberger
     # @param defaults [Hash<String, String>] default values for missing keys
     # @return [Hash<String, String>] the loaded key-value pairs
     # @raise [ValidationError] if required keys are missing
-    def self.load(*files, required: [], types: {}, defaults: {})
+    def self.load(*files, required: [], types: {}, defaults: {}, prefix: nil, strip_prefix: false)
       loaded = {}
 
       defaults.each { |key, value| loaded[key.to_s] = value.to_s }
@@ -35,6 +35,11 @@ module Philiprehberger
       raise ValidationError, "missing required keys: #{missing.join(', ')}" unless missing.empty?
 
       coerce_types(types)
+
+      if prefix
+        loaded = loaded.select { |key, _| key.start_with?(prefix) }
+        loaded = loaded.transform_keys { |key| key.delete_prefix(prefix) } if strip_prefix
+      end
 
       loaded
     end
