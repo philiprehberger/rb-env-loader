@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-04
+
+### Added
+- `prefix:` option for filtering loaded variables by key prefix
+- `strip_prefix:` option for removing prefix from filtered keys
+- GitHub issue template gem version field
+- Feature request "Alternatives considered" field
+
 ## [0.1.6] - 2026-03-31
 
 ### Added

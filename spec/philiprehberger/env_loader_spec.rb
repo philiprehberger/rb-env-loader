@@ -10,7 +10,8 @@ RSpec.describe Philiprehberger::EnvLoader do
     FileUtils.rm_rf(tmpdir)
     %w[TEST_KEY TEST_HOST TEST_PORT TEST_DEBUG TEST_OTHER REQUIRED_KEY
        TEST_FLOAT TEST_BOOL_YES TEST_BOOL_ON TEST_BOOL_NO
-       FIRST_KEY SECOND_KEY DEFAULT_ONLY].each { |k| ENV.delete(k) }
+       FIRST_KEY SECOND_KEY DEFAULT_ONLY
+       APP_HOST APP_PORT DB_HOST].each { |k| ENV.delete(k) }
   end
 
   describe 'VERSION' do
@@ -189,6 +190,35 @@ RSpec.describe Philiprehberger::EnvLoader do
       File.write(file2, "SECOND_KEY=two\n")
       result = described_class.load(file1, file2)
       expect(result).to include('FIRST_KEY' => 'one', 'SECOND_KEY' => 'two')
+    end
+  end
+
+  describe '.load with prefix filtering' do
+    let(:env_file) { File.join(tmpdir, '.env') }
+
+    before do
+      File.write(env_file, "APP_HOST=localhost\nAPP_PORT=3000\nDB_HOST=db.local\n")
+    end
+
+    it 'filters keys by prefix' do
+      result = described_class.load(env_file, prefix: 'APP_')
+      expect(result.keys).to contain_exactly('APP_HOST', 'APP_PORT')
+    end
+
+    it 'strips prefix when requested' do
+      result = described_class.load(env_file, prefix: 'APP_', strip_prefix: true)
+      expect(result.keys).to contain_exactly('HOST', 'PORT')
+      expect(result['HOST']).to eq('localhost')
+    end
+
+    it 'returns all keys when no prefix' do
+      result = described_class.load(env_file)
+      expect(result.keys).to include('APP_HOST', 'DB_HOST')
+    end
+
+    it 'returns empty hash when no keys match prefix' do
+      result = described_class.load(env_file, prefix: 'REDIS_')
+      expect(result).to be_empty
     end
   end
 
