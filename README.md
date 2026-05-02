@@ -73,6 +73,21 @@ Philiprehberger::EnvLoader.generate_template(
 )
 ```
 
+### Parse from a String
+
+Parse `.env`-formatted text without reading from disk and without touching ENV:
+
+```ruby
+content = <<~ENV
+  APP_HOST=localhost
+  APP_PORT=3000
+  # comments and blank lines are ignored
+ENV
+
+Philiprehberger::EnvLoader.parse(content)
+# => { "APP_HOST" => "localhost", "APP_PORT" => "3000" }
+```
+
 ## API
 
 | Method | Description |
@@ -80,6 +95,7 @@ Philiprehberger::EnvLoader.generate_template(
 | `.load(*files, required:, types:, defaults:, prefix:, strip_prefix:)` | Load variables from .env files with options |
 | `.validate!(*keys)` | Raise if any keys are missing or empty in ENV |
 | `.generate_template(output:, keys:)` | Generate a .env.template file |
+| `.parse(content)` | Parse `.env`-formatted content from a string into a hash without touching ENV |
 | `EnvLoader::Error` | Base error class for all gem errors |
 | `EnvLoader::ValidationError` | Raised when required keys are missing or empty |
 

@@ -65,13 +65,18 @@ module Philiprehberger
       File.write(output, "#{content}\n")
     end
 
-    # Parse a .env file into a hash of key-value pairs.
+    # Parse `.env`-formatted content from a string into a hash.
     #
-    # @param path [String] the file path
-    # @return [Hash<String, String>] parsed key-value pairs
-    def self.parse_file(path)
+    # Useful for tests, embedded configurations, and any scenario where the
+    # `.env` content does not live in a file. Comments (`#`), blank lines,
+    # and surrounding whitespace are ignored. Single- and double-quoted
+    # values are unwrapped. ENV is not touched.
+    #
+    # @param content [String] the `.env`-formatted text
+    # @return [Hash{String => String}] parsed key-value pairs
+    def self.parse(content)
       result = {}
-      File.readlines(path).each do |line|
+      content.to_s.each_line do |line|
         line = line.strip
         next if line.empty? || line.start_with?('#')
 
@@ -85,6 +90,14 @@ module Philiprehberger
         result[key] = value
       end
       result
+    end
+
+    # Parse a .env file into a hash of key-value pairs.
+    #
+    # @param path [String] the file path
+    # @return [Hash<String, String>] parsed key-value pairs
+    def self.parse_file(path)
+      parse(File.read(path))
     end
     private_class_method :parse_file
 

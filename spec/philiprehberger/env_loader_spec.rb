@@ -288,4 +288,36 @@ RSpec.describe Philiprehberger::EnvLoader do
       expect(Philiprehberger::EnvLoader::Error).to be < StandardError
     end
   end
+
+  describe '.parse' do
+    it 'parses key=value pairs from a string' do
+      content = "APP_HOST=localhost\nAPP_PORT=3000\n"
+      expect(described_class.parse(content)).to eq('APP_HOST' => 'localhost', 'APP_PORT' => '3000')
+    end
+
+    it 'skips blank lines and comments' do
+      content = "# top comment\nA=1\n\n# inline\nB=2\n"
+      expect(described_class.parse(content)).to eq('A' => '1', 'B' => '2')
+    end
+
+    it 'unwraps single- and double-quoted values' do
+      content = %(A="quoted"\nB='single'\nC=plain\n)
+      expect(described_class.parse(content)).to eq('A' => 'quoted', 'B' => 'single', 'C' => 'plain')
+    end
+
+    it 'returns an empty hash for empty input' do
+      expect(described_class.parse('')).to eq({})
+      expect(described_class.parse(nil)).to eq({})
+    end
+
+    it 'does not mutate ENV' do
+      content = "PARSE_ONLY_KEY_DOES_NOT_LEAK=value\n"
+      described_class.parse(content)
+      expect(ENV.fetch('PARSE_ONLY_KEY_DOES_NOT_LEAK', nil)).to be_nil
+    end
+
+    it 'splits only on the first = so values containing = are preserved' do
+      expect(described_class.parse('TOKEN=abc=def')).to eq('TOKEN' => 'abc=def')
+    end
+  end
 end
