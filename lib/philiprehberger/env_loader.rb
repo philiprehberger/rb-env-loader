@@ -85,8 +85,11 @@ module Philiprehberger
 
         key = key.strip
         value = value.strip
-        value = value[1..-2] if (value.start_with?('"') && value.end_with?('"')) ||
-                                (value.start_with?("'") && value.end_with?("'"))
+        if value.length >= 2 && value.start_with?('"') && value.end_with?('"')
+          value = value[1..-2].gsub(/\\(.)/) { Regexp.last_match(1) == 'n' ? "\n" : Regexp.last_match(1) }
+        elsif value.length >= 2 && value.start_with?("'") && value.end_with?("'")
+          value = value[1..-2]
+        end
         result[key] = value
       end
       result
@@ -100,6 +103,44 @@ module Philiprehberger
       parse(File.read(path))
     end
     private_class_method :parse_file
+
+    # Serialize a hash to `.env`-formatted text suitable for writing to a
+    # file or passing to {parse}.
+    #
+    # Keys are emitted in alphabetical order. Values that contain
+    # whitespace, `=`, `#`, or quote characters are wrapped in double
+    # quotes with inner `"` and `\` backslash-escaped. `nil` values become
+    # empty (`KEY=`). The output always ends with a single trailing
+    # newline.
+    #
+    # @example Round trip
+    #   Philiprehberger::EnvLoader.parse(
+    #     Philiprehberger::EnvLoader.dump('A' => '1', 'B' => 'two words')
+    #   )
+    #   # => { "A" => "1", "B" => "two words" }
+    #
+    # @param hash [Hash{String, Symbol => Object}] the key-value pairs to serialize
+    # @return [String] `.env`-formatted text
+    def self.dump(hash)
+      lines = hash.to_h
+                  .transform_keys(&:to_s)
+                  .sort_by(&:first)
+                  .map { |key, value| "#{key}=#{format_value(value)}" }
+      "#{lines.join("\n")}\n"
+    end
+
+    # @api private
+    def self.format_value(value)
+      return '' if value.nil?
+
+      str = value.to_s
+      return '' if str.empty?
+      return str unless str.match?(/[\s="'#]/)
+
+      escaped = str.gsub('\\') { '\\\\' }.gsub('"') { '\\"' }
+      %("#{escaped}")
+    end
+    private_class_method :format_value
 
     # Apply type coercions to ENV values.
     #

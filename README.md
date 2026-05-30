@@ -4,6 +4,8 @@
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-env_loader.svg)](https://rubygems.org/gems/philiprehberger-env_loader)
 [![Last updated](https://img.shields.io/github/last-commit/philiprehberger/rb-env-loader)](https://github.com/philiprehberger/rb-env-loader/commits/main)
 
+![philiprehberger-env_loader](https://raw.githubusercontent.com/philiprehberger/rb-env-loader/main/package-card.webp)
+
 Multi-source environment variable loader with precedence and validation
 
 ## Requirements
@@ -88,6 +90,21 @@ Philiprehberger::EnvLoader.parse(content)
 # => { "APP_HOST" => "localhost", "APP_PORT" => "3000" }
 ```
 
+### Dump to `.env` Format
+
+Serialize a hash back to `.env`-formatted text. Round-trips with `parse` for any input. Values that contain whitespace, `=`, `#`, or quote characters are double-quoted with inner `"` and `\` backslash-escaped. Keys are sorted alphabetically.
+
+```ruby
+text = Philiprehberger::EnvLoader.dump(
+  'APP_HOST' => 'localhost',
+  'APP_PORT' => '3000',
+  'NOTE' => 'has "quote"'
+)
+# => "APP_HOST=localhost\nAPP_PORT=3000\nNOTE=\"has \\\"quote\\\"\"\n"
+
+File.write('.env', text)
+```
+
 ## API
 
 | Method | Description |
@@ -96,6 +113,7 @@ Philiprehberger::EnvLoader.parse(content)
 | `.validate!(*keys)` | Raise if any keys are missing or empty in ENV |
 | `.generate_template(output:, keys:)` | Generate a .env.template file |
 | `.parse(content)` | Parse `.env`-formatted content from a string into a hash without touching ENV |
+| `.dump(hash)` | Serialize a hash to `.env`-formatted text (round-trips with `parse`) |
 | `EnvLoader::Error` | Base error class for all gem errors |
 | `EnvLoader::ValidationError` | Raised when required keys are missing or empty |
 

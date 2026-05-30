@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-05-29
+
+### Added
+- `EnvLoader.dump(hash)` serializes a hash to `.env`-formatted text suitable for `parse` or for writing to a file; alphabetically sorted keys, double-quotes for values containing whitespace/`=`/`#`/quotes, backslash-escapes inner `"` and `\`, trailing newline
+- `parse` now unescapes `\"`, `\\`, and `\n` inside double-quoted values so `parse(dump(h))` round-trips cleanly for values with inner quotes
+
 ## [0.3.0] - 2026-05-01
 
 ### Added

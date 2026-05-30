@@ -320,4 +320,48 @@ RSpec.describe Philiprehberger::EnvLoader do
       expect(described_class.parse('TOKEN=abc=def')).to eq('TOKEN' => 'abc=def')
     end
   end
+
+  describe '.dump' do
+    it 'serializes simple key=value pairs sorted alphabetically' do
+      result = described_class.dump('B' => '2', 'A' => '1')
+      expect(result).to eq("A=1\nB=2\n")
+    end
+
+    it 'quotes values containing whitespace' do
+      expect(described_class.dump('A' => 'two words')).to eq(%(A="two words"\n))
+    end
+
+    it 'quotes values containing equals signs and hashes' do
+      result = described_class.dump('A' => 'a=b', 'B' => 'x # y')
+      expect(result).to eq(%(A="a=b"\nB="x # y"\n))
+    end
+
+    it 'escapes inner double quotes and backslashes' do
+      result = described_class.dump('A' => 'has "quote" and \\ slash')
+      expect(result).to eq(%(A="has \\"quote\\" and \\\\ slash"\n))
+    end
+
+    it 'emits empty value for nil' do
+      expect(described_class.dump('A' => nil)).to eq("A=\n")
+    end
+
+    it 'accepts symbol keys' do
+      expect(described_class.dump(a: '1')).to eq("a=1\n")
+    end
+
+    it 'round-trips through parse for plain values' do
+      original = { 'A' => '1', 'B' => 'two words', 'C' => 'a=b' }
+      expect(described_class.parse(described_class.dump(original))).to eq(original)
+    end
+
+    it 'round-trips through parse for values with inner quotes' do
+      original = { 'A' => %(say "hi") }
+      expect(described_class.parse(described_class.dump(original))).to eq(original)
+    end
+
+    it 'always ends with a single trailing newline' do
+      expect(described_class.dump('A' => '1')).to end_with("\n")
+      expect(described_class.dump({})).to eq("\n")
+    end
+  end
 end
